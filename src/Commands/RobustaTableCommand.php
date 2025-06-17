@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Evitenic\RobustaTable\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class RobustaTableCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'robusta-table';
 
     public $description = 'My command';
 
