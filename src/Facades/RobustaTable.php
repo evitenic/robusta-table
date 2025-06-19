@@ -11,6 +11,6 @@ class RobustaTable extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Evitenic\RobustaTable\RobustaTable::class;
+        return RobustaTable::class;
     }
 }

@@ -30,6 +30,7 @@ class RobustaTableServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package->name(static::$name)
+            ->hasViews(static::$name)
             ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
@@ -38,6 +39,7 @@ class RobustaTableServiceProvider extends PackageServiceProvider
                     ->askToRunMigrations()
                     ->askToStarRepoOnGitHub('evitenic/robusta-table');
             });
+
 
         $configFileName = $package->shortName();
 
