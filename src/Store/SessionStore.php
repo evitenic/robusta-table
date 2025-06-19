@@ -34,7 +34,7 @@ class SessionStore implements Store
         $keys = array_keys(Session::all());
 
         foreach ($keys as $key) {
-            if (str_starts_with($key, $prefix.'_')) {
+            if (str_starts_with($key, $prefix . '_')) {
                 Session::forget($key);
             }
         }
@@ -46,8 +46,8 @@ class SessionStore implements Store
         $all = [];
 
         foreach (Session::all() as $key => $value) {
-            if (str_starts_with($key, $prefix.'_')) {
-                $all[str_replace($prefix.'_', '', $key)] = $value;
+            if (str_starts_with($key, $prefix . '_')) {
+                $all[str_replace($prefix . '_', '', $key)] = $value;
             }
         }
 
@@ -63,7 +63,7 @@ class SessionStore implements Store
     {
         $prefix = config('robusta-table.prefix_store', 'robusta_table');
 
-        if (!is_string($prefix)) {
+        if (! is_string($prefix)) {
             throw new RuntimeException(
                 'Configuration robusta-table.prefix_store must be a string'
             );

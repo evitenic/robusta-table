@@ -4,7 +4,8 @@ namespace Evitenic\RobustaTable\Concerns;
 
 trait HasReorderColumns
 {
-    public function canReorderColumns(): bool {
+    public function canReorderColumns(): bool
+    {
         return true;
     }
 }

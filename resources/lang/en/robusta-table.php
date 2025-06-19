@@ -2,5 +2,5 @@
 
 // translations for Evitenic/RobustaTable
 return [
-    'columns' => 'Columns'
+    'columns' => 'Columns',
 ];

@@ -40,7 +40,6 @@ class RobustaTableServiceProvider extends PackageServiceProvider
                     ->askToStarRepoOnGitHub('evitenic/robusta-table');
             });
 
-
         $configFileName = $package->shortName();
 
         if (file_exists($package->basePath("/../config/{$configFileName}.php"))) {

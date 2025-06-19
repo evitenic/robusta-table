@@ -2,19 +2,16 @@
 
 namespace Evitenic\RobustaTable\Concerns;
 
-use Evitenic\RobustaTable\Concerns\HasFavoritesBar;
-use Evitenic\RobustaTable\Concerns\HasReorderColumns;
 use Evitenic\RobustaTable\Tables\RobustaTable;
-use Filament\Support\Facades\FilamentIcon;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
-use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Contracts\View\View;
 
 trait HasRobustaTable
 {
-    use HasFavoritesBar, HasReorderColumns;
+    use HasFavoritesBar;
+    use HasReorderColumns;
 
     protected function makeBaseTable(): Table
     {
@@ -89,11 +86,11 @@ trait HasRobustaTable
             ->color('gray')
             ->livewireClickHandlerEnabled(false)
             ->table($this->getTable());
-            FilamentView::registerRenderHook(
+        FilamentView::registerRenderHook(
             $filamentHook,
             fn (): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
-                'columns' => $this->getTable()->getColumns()
+                'columns' => $this->getTable()->getColumns(),
             ]),
             scopes: static::class,
         );
