@@ -1,2 +1,8 @@
 import './resized-column'
-import './reorder-column'
+import sortable from './sortable'
+
+document.addEventListener('alpine:init', () => {
+    Alpine.plugin(sortable)
+})
+
+
