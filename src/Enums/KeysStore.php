@@ -2,7 +2,6 @@
 
 namespace Evitenic\RobustaTable\Enums;
 
-
 enum KeysStore: string
 {
     case Session = 'session';

@@ -3,7 +3,6 @@
 namespace Evitenic\RobustaTable\Store;
 
 use Evitenic\RobustaTable\Contracts\Store;
-use Evitenic\RobustaTable\Store\SessionStore;
 
 class RobustaTableStore
 {
@@ -20,7 +19,7 @@ class RobustaTableStore
         }
 
         if ($configStore === 'session') {
-            $this->store = new SessionStore();
+            $this->store = new SessionStore;
         } elseif (class_exists($configStore)) {
             $this->store = app($configStore); // Bisa inject via container
         } else {
@@ -30,8 +29,8 @@ class RobustaTableStore
 
     public static function getInstance(): self
     {
-        if (!static::$instance) {
-            static::$instance = new static();
+        if (! static::$instance) {
+            static::$instance = new static;
         }
 
         return static::$instance;

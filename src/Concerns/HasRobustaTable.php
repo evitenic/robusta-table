@@ -29,7 +29,9 @@ trait HasRobustaTable
         $this->initSessionOrderedColumns($store);
 
         $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
-        if (!empty($this->orderedColumns)) $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
+        if (! empty($this->orderedColumns)) {
+            $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
+        }
     }
 
     public function mountHasRobustaTable()
@@ -80,7 +82,7 @@ trait HasRobustaTable
 
         FilamentView::registerRenderHook(
             $filamentHook,
-            fn(): View => view('robusta-table::robusta-column.dropdown', [
+            fn (): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
                 'columns' => $this->getTable()->getColumns(),
             ]),
@@ -105,7 +107,7 @@ trait HasRobustaTable
         $allColumns = $this->getTable()->getColumns();
 
         return collect($orderedNames)
-            ->mapWithKeys(fn($name) => [$name => $allColumns[$name]])
+            ->mapWithKeys(fn ($name) => [$name => $allColumns[$name]])
             ->all();
     }
 
@@ -117,7 +119,7 @@ trait HasRobustaTable
 
     public function getToggleColumnState(string $columnName): bool
     {
-        return !$this->isTableColumnToggledHidden($columnName);
+        return ! $this->isTableColumnToggledHidden($columnName);
     }
 
     public function storeToggleColumnState(): void

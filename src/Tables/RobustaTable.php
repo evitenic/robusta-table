@@ -2,11 +2,12 @@
 
 namespace Evitenic\RobustaTable\Tables;
 
-use Filament\Tables\Table;
 use Evitenic\RobustaTable\Concerns\Table\HasReorderColumns;
 use Evitenic\RobustaTable\Concerns\Table\HasToggleColumn;
+use Filament\Tables\Table;
 
 class RobustaTable extends Table
 {
-    use HasReorderColumns, HasToggleColumn;
+    use HasReorderColumns;
+    use HasToggleColumn;
 }
