@@ -73,7 +73,7 @@ trait HasRobustaTable
     {
 
         $action = Action::make('toggleColumns')
-            ->label('Test')
+            ->label(__('robusta-table::robusta-table.manage_columns'))
             ->iconButton()
             ->icon(config('robusta-table.icons.manage-column'))
             ->color('gray')
