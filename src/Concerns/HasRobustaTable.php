@@ -82,11 +82,10 @@ trait HasRobustaTable
 
         FilamentView::registerRenderHook(
             $filamentHook,
-            fn (): View => view('robusta-table::robusta-column.dropdown', [
+            fn(): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
                 'columns' => $this->getTable()->getColumns(),
             ]),
-            scopes: static::class,
         );
     }
 
@@ -107,7 +106,7 @@ trait HasRobustaTable
         $allColumns = $this->getTable()->getColumns();
 
         return collect($orderedNames)
-            ->mapWithKeys(fn ($name) => [$name => $allColumns[$name]])
+            ->mapWithKeys(fn($name) => [$name => $allColumns[$name]])
             ->all();
     }
 
