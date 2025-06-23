@@ -25,7 +25,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Evitenic\\RobustaTable\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName) => 'Evitenic\\RobustaTable\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 

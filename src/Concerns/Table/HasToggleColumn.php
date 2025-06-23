@@ -6,7 +6,7 @@ use Closure;
 
 trait HasToggleColumn
 {
-    protected bool | Closure $persistsToggledColumns = false;
+    protected bool|Closure $persistsToggledColumns = false;
 
     public function persistsToggledColumns(bool $persists = true): static
     {

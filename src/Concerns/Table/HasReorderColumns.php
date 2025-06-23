@@ -6,11 +6,11 @@ use Closure;
 
 trait HasReorderColumns
 {
-    protected bool | Closure $isReorderableColumns = false;
+    protected bool|Closure $isReorderableColumns = false;
 
-    protected bool | Closure $persistsReorderedColumns = false;
+    protected bool|Closure $persistsReorderedColumns = false;
 
-    public function reorderableColumns(bool | Closure $isReorderableColumns = true): static
+    public function reorderableColumns(bool|Closure $isReorderableColumns = true): static
     {
         $this->isReorderableColumns = $isReorderableColumns;
 
