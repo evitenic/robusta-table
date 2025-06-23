@@ -16,5 +16,5 @@ return [
         'column-visible' => 'heroicon-m-eye',
     ],
 
-    'position_manage_columns' => TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
+    'position_manage_columns' => TablesRenderHook::TOOLBAR_END,
 ];
