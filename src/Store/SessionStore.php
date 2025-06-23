@@ -33,7 +33,7 @@ class SessionStore implements Store
         $keys = array_keys(session()->all());
 
         foreach ($keys as $key) {
-            if (str_starts_with($key, $prefix.'_')) {
+            if (str_starts_with($key, $prefix . '_')) {
                 session()->forget($key);
             }
         }
@@ -45,8 +45,8 @@ class SessionStore implements Store
         $all = [];
 
         foreach (session()->all() as $key => $value) {
-            if (str_starts_with($key, $prefix.'_')) {
-                $all[str_replace($prefix.'_', '', $key)] = $value;
+            if (str_starts_with($key, $prefix . '_')) {
+                $all[str_replace($prefix . '_', '', $key)] = $value;
             }
         }
 
