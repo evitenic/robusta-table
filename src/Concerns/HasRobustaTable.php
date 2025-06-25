@@ -15,6 +15,8 @@ trait HasRobustaTable
 {
     public array $orderedColumns = [];
 
+    public array $tmpToggledColumns = [];
+
     protected function makeBaseTable(): Table
     {
         return RobustaTable::make($this);
@@ -29,7 +31,6 @@ trait HasRobustaTable
         $this->initSessionOrderedColumns($store);
 
         $this->getTable()->applyColumnExtraAttributes();
-
 
         $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
         if (! empty($this->orderedColumns)) {
@@ -116,6 +117,7 @@ trait HasRobustaTable
     public function toggleColumnVisibility(string $columnName): void
     {
         data_set($this->getTable()->getLivewire()->toggledTableColumns, $columnName, $this->isTableColumnToggledHidden($columnName));
+        $this->tmpToggledColumns = $this->getTable()->getLivewire()->toggledTableColumns;
         $this->storeToggleColumnState();
     }
 
@@ -152,8 +154,10 @@ trait HasRobustaTable
             $toggledColumns = $store->get(KeysStore::ToggleColumns->value, []);
             $this->getTable()->getLivewire()->toggledTableColumns = $toggledColumns;
         } else {
-            $store->forget(KeysStore::ToggleColumns->value);
-            $this->getTable()->getLivewire()->toggledTableColumns = $this->getDefaultTableColumnToggleState();
+            if (empty($this->tmpToggledColumns)) {
+                $store->forget(KeysStore::ToggleColumns->value);
+                $this->getTable()->getLivewire()->toggledTableColumns = $this->getDefaultTableColumnToggleState();
+            }
         }
     }
 
@@ -163,8 +167,10 @@ trait HasRobustaTable
             $orderedColumns = $store->get(KeysStore::OrderedColumns->value, []);
             $this->orderedColumns = $orderedColumns;
         } else {
-            $store->forget(KeysStore::OrderedColumns->value);
-            $this->orderedColumns = array_keys($this->getTable()->getColumns());
+            if (empty($this->orderedColumns)) {
+                $store->forget(KeysStore::OrderedColumns->value);
+                $this->orderedColumns = array_keys($this->getTable()->getColumns());
+            }
         }
     }
 
