@@ -13,9 +13,11 @@ export default function (Alpine) {
         const tableWrapperContentSelector = '.fi-ta-content';
         const tableBodyCellPrefix = 'fi-table-cell-';
         const columnSelector = 'x-robusta-table-column';
+        const excludeColumnSelector = 'x-robusta-table-exclude-column';
 
 
         const columns = el.querySelectorAll(`[${columnSelector}]`);
+        const excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
 
         let table = el.querySelector(tableSelector);
         let tableWrapper = el.querySelector(tableWrapperContentSelector);
@@ -33,31 +35,37 @@ export default function (Alpine) {
         function initializeColumnLayout() {
             let totalWidth = 0;
 
-            columns.forEach(column => {
-                column.classList.add("relative", "group/column-resize", "overflow-hidden");
-
-                createHandleBar(column);
-
-                const columnName = getColumnName(column);
+            const applyLayout = (column, getNameFn, withHandleBar = false) => {
+                const columnName = getNameFn(column);
                 const defaultKey = `${columnName}_default`;
+
+                if (withHandleBar) {
+                    column.classList.add("relative", "group/column-resize", "overflow-hidden");
+                    createHandleBar(column);
+                }
 
                 let savedWidth = getSavedWidth(columnName);
                 const defaultWidth = getSavedWidth(defaultKey);
 
                 if (!savedWidth && defaultWidth) {
-                    // Pakai defaultWidth untuk apply, tapi tidak disimpan ulang ke columnName
                     savedWidth = defaultWidth;
                 }
 
                 if (!savedWidth && !defaultWidth) {
-                    // Simpan hanya ke default jika benar-benar belum ada data sama sekali
                     savedWidth = column.offsetWidth;
                     handleColumnUpdate(savedWidth, defaultKey);
                 }
 
                 totalWidth += savedWidth;
-
                 applyColumnWidth(savedWidth, column);
+            };
+
+            excludeColumns.forEach(column => {
+                applyLayout(column, col => getColumnName(col, excludeColumnSelector));
+            });
+
+            columns.forEach(column => {
+                applyLayout(column, getColumnName, true);
             });
 
             if (table && totalWidth) {
@@ -197,8 +205,8 @@ export default function (Alpine) {
             );
         }
 
-        function getColumnName(column) {
-            return column.getAttribute(columnSelector);
+        function getColumnName(column, selector = columnSelector) {
+            return column.getAttribute(selector);
         }
     })
 }
