@@ -28,6 +28,9 @@ trait HasRobustaTable
         $this->initSessionToggledColumns($store);
         $this->initSessionOrderedColumns($store);
 
+        $this->getTable()->applyColumnExtraAttributes();
+
+
         $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
         if (! empty($this->orderedColumns)) {
             $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
@@ -163,5 +166,14 @@ trait HasRobustaTable
             $store->forget(KeysStore::OrderedColumns->value);
             $this->orderedColumns = array_keys($this->getTable()->getColumns());
         }
+    }
+
+    /**
+     * Resized Columns
+     */
+
+    public function getResizableColumnsConfig(): array
+    {
+        return $this->getTable()->getResizableColumnsConfig();
     }
 }
