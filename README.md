@@ -1,8 +1,6 @@
 # Robusta Table
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/evitenic/robusta-table.svg?style=flat-square)](https://packagist.org/packages/evitenic/robusta-table)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/evitenic/robusta-table/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/evitenic/robusta-table/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/evitenic/robusta-table/fix-php-code-styling.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/evitenic/robusta-table/actions?query=workflow%3A"Fix+PHP+code+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/evitenic/robusta-table.svg?style=flat-square)](https://packagist.org/packages/evitenic/robusta-table)
 
 
@@ -15,13 +13,6 @@ You can install the package via composer:
 
 ```bash
 composer require evitenic/robusta-table
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="robusta-table-migrations"
-php artisan migrate
 ```
 
 You can publish the config file with:
@@ -46,8 +37,7 @@ return [
 ## Usage
 
 ```php
-$robustaTable = new Evitenic\RobustaTable();
-echo $robustaTable->echoPhrase('Hello, Evitenic!');
+use HasRobustaTable;
 ```
 
 ## Testing
