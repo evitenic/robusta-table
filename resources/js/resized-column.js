@@ -39,19 +39,20 @@ export default function (Alpine) {
                 createHandleBar(column);
 
                 const columnName = getColumnName(column);
+                const defaultKey = `${columnName}_default`;
+
                 let savedWidth = getSavedWidth(columnName);
+                const defaultWidth = getSavedWidth(defaultKey);
 
-                if (!savedWidth) {
-                    const defaultKey = `${columnName}_default`;
-                    const defaultWidth = getSavedWidth(defaultKey);
+                if (!savedWidth && defaultWidth) {
+                    // Pakai defaultWidth untuk apply, tapi tidak disimpan ulang ke columnName
+                    savedWidth = defaultWidth;
+                }
 
-                    if (defaultWidth) {
-                        savedWidth = defaultWidth;
-                        handleColumnUpdate(savedWidth, columnName);
-                    } else {
-                        savedWidth = column.offsetWidth;
-                        handleColumnUpdate(savedWidth, defaultKey);
-                    }
+                if (!savedWidth && !defaultWidth) {
+                    // Simpan hanya ke default jika benar-benar belum ada data sama sekali
+                    savedWidth = column.offsetWidth;
+                    handleColumnUpdate(savedWidth, defaultKey);
                 }
 
                 totalWidth += savedWidth;
@@ -96,6 +97,8 @@ export default function (Alpine) {
 
         function startResize(event, column) {
             event.preventDefault();
+            event.stopPropagation();
+
             if (event) {
                 event.target.classList.add("active");
             }
