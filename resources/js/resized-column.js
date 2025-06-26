@@ -15,7 +15,6 @@ export default function (Alpine) {
         const columnSelector = 'x-robusta-table-column';
         const excludeColumnSelector = 'x-robusta-table-exclude-column';
 
-
         const columns = el.querySelectorAll(`[${columnSelector}]`);
         const excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
 
@@ -169,7 +168,10 @@ export default function (Alpine) {
         }
 
         function escapeCssClass(className) {
-            return className.replace(/\./g, "\\.").replace(/_/g, "-");
+            return className
+                .split('.')
+                .map(s => s.replace(/_/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
+                .join('.');
         }
 
         function throttle(callback, limit) {
