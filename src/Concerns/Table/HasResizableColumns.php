@@ -3,7 +3,6 @@
 namespace Evitenic\RobustaTable\Concerns\Table;
 
 use Closure;
-use Illuminate\Support\Str;
 
 trait HasResizableColumns
 {
@@ -13,7 +12,7 @@ trait HasResizableColumns
 
     protected array $columnWidths = [];
 
-    public function resizableColumns(array|Closure $config = []): static
+    public function resizableColumns(array | Closure $config = []): static
     {
         $this->resizableColumnsConfig = $config;
 
@@ -60,7 +59,7 @@ trait HasResizableColumns
             } else {
                 $column->extraHeaderAttributes([
                     'x-robusta-table-column' => $columnName,
-                    ...$styles['header']
+                    ...$styles['header'],
                 ])
                     ->extraCellAttributes($styles['cell']);
             }
@@ -74,7 +73,6 @@ trait HasResizableColumns
         }
         $getWidth = $this->getWidth($width);
         $style = "min-width: {$getWidth}; width: {$getWidth}; max-width: {$getWidth}";
-
 
         return [
             'header' => ['style' => $style],
@@ -91,7 +89,7 @@ trait HasResizableColumns
         return $width;
     }
 
-    public function excludedResizableColumns(array|Closure $excludedColumns): static
+    public function excludedResizableColumns(array | Closure $excludedColumns = []): static
     {
         $this->excludedResizableColumns = $excludedColumns;
 
@@ -101,7 +99,7 @@ trait HasResizableColumns
     public function getExcludedResizableColumns(): array
     {
         return collect($this->evaluate($this->excludedResizableColumns))
-            ->mapWithKeys(fn($column) => [$column => $this->getColumn($column)])
+            ->mapWithKeys(fn ($column) => [$column => $this->getColumn($column)])
             ->all();
     }
 }
