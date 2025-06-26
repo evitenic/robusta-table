@@ -3,7 +3,6 @@ import Sortable from 'sortablejs';
 export default function (Alpine) {
     Alpine.directive('robusta-sortable', (el, { expression }, { evaluateLater, cleanup }) => {
         const evaluate = evaluateLater(expression);
-        console.log(evaluate);
 
         const sortable = Sortable.create(el, {
             animation: 150,
