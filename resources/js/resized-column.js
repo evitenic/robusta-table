@@ -1,5 +1,7 @@
+let initialized = false;
+
 export default function (Alpine) {
-    Alpine.directive('robusta-resized-column', (el, { expression }, { evaluate }) => {
+    Alpine.directive('robusta-resized-column', (el, { expression }, { evaluate, cleanup }) => {
         const evaluated = evaluate(expression) || {};
         let { tableKey, minColumnWidth, maxColumnWidth, enable = false } = evaluated
 
@@ -14,19 +16,41 @@ export default function (Alpine) {
         const columnSelector = 'x-robusta-table-column';
         const excludeColumnSelector = 'x-robusta-table-exclude-column';
 
-        const columns = el.querySelectorAll(`[${columnSelector}]`);
-        const excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
+        let columns = el.querySelectorAll(`[${columnSelector}]`);
+        let excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
 
         let table = el.querySelector(tableSelector);
         let tableWrapper = el.querySelector(tableWrapperContentSelector);
 
-        let handleBar = null
-
         if (table && tableWrapper) {
-            init();
+             if (initialized) {
+                return;
+            }
+
+            initialized = true;
+
+            const observer = new MutationObserver(() => {
+                observer.disconnect();  // stop observing temporarily
+                init();
+                observer.observe(el, { childList: true, subtree: true }); // resume observing
+            });
+
+             observer.observe(el, { childList: true, subtree: true });
+
+              cleanup(() => {
+                observer.disconnect();
+                initialized = false; // ✅ allow re-init when re-mounted
+            });
+
+             init();
         }
 
         function init() {
+            table = el.querySelector(tableSelector);
+            tableWrapper = el.querySelector(tableWrapperContentSelector);
+            columns = el.querySelectorAll(`[${columnSelector}]`);
+            excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
+
             initializeColumnLayout()
         }
 
@@ -75,7 +99,7 @@ export default function (Alpine) {
             const existingHandle = column.querySelector(".column-resize-handle-bar");
             if (existingHandle) existingHandle.remove();
 
-            handleBar = document.createElement("button");
+            const handleBar = document.createElement("button");
             handleBar.type = "button";
             handleBar.classList.add("column-resize-handle-bar");
             handleBar.title = "Resize column";
