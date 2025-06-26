@@ -8,7 +8,6 @@ export default function (Alpine) {
         if (!enable) return;
 
         let currentWidth = 0
-
         const tableSelector = '.fi-ta-table';
         const tableWrapperContentSelector = '.fi-ta-content';
         const tableBodyCellPrefix = 'fi-table-cell-';
@@ -171,7 +170,7 @@ export default function (Alpine) {
             return className
                 .split('.')
                 .map(s => s.replace(/_/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
-                .join('.');
+                .join('\\.');
         }
 
         function throttle(callback, limit) {
