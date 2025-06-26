@@ -10,6 +10,8 @@ trait HasReorderColumns
 
     protected bool | Closure $persistsReorderedColumns = false;
 
+    protected array | Closure $excludedReorderableColumns = [];
+
     public function reorderableColumns(bool | Closure $isReorderableColumns = true): static
     {
         $this->isReorderableColumns = $isReorderableColumns;
@@ -32,5 +34,18 @@ trait HasReorderColumns
     public function isPersistingReorderedColumns(): bool
     {
         return $this->evaluate($this->persistsReorderedColumns);
+    }
+
+    public function excludedReorderableColumns(array | Closure $excludedReorderableColumns = []): static
+    {
+        $this->excludedReorderableColumns = $excludedReorderableColumns;
+
+        return $this;
+    }
+    public function getExcludedReorderableColumns(): array
+    {
+        return collect($this->evaluate($this->excludedReorderableColumns))
+            ->mapWithKeys(fn($column) => [$column => $this->getColumn($column)])
+            ->all();
     }
 }

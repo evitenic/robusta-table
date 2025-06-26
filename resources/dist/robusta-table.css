@@ -3463,6 +3463,10 @@ select {
   border-top-width: 1px;
 }
 
+.border-dashed {
+  border-style: dashed;
+}
+
 .\!border-none {
   border-style: none !important;
 }

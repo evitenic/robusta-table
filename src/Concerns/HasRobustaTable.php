@@ -89,6 +89,7 @@ trait HasRobustaTable
             fn(): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
                 'columns' => $this->getTable()->getColumns(),
+                'excludedReorderableColumns' => $this->getTable()->getExcludedReorderableColumns(),
             ]),
         );
     }
