@@ -169,7 +169,7 @@ export default function (Alpine) {
         }
 
         function escapeCssClass(className) {
-            return className.replace(/\./g, "\\.");
+            return className.replace(/\./g, "\\.").replace(/_/g, "-");
         }
 
         function throttle(callback, limit) {
