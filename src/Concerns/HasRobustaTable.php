@@ -179,8 +179,8 @@ trait HasRobustaTable
      * Resized Columns
      */
 
-    public function getResizableColumnsConfig(): array
+    public function getResizeableColumnsConfig(): array
     {
-        return $this->getTable()->getResizableColumnsConfig();
+        return $this->getTable()->getResizeableColumnsConfig();
     }
 }
