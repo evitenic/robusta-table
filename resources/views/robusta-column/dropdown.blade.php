@@ -55,16 +55,17 @@
                 </div>
             @endforeach
         </div>
-        @if (!empty($excludedReorderableColumns))
+        @php
+            $filteredExcludedReorderableColumns = array_filter(
+                $excludedReorderableColumns,
+                fn($column) => $column->isToggleable(),
+            );
+        @endphp
+        @if (!empty($filteredExcludedReorderableColumns))
             <div class="grid gap-y-4 mt-4 border-t pt-4" style="border-style: dashed;">
-                @foreach ($excludedReorderableColumns as $key => $column)
+                @foreach ($filteredExcludedReorderableColumns as $key => $column)
                     @php
                         $isColumnVisible = $this->getToggleColumnState($column->getName());
-                        $isToggleable = $column->isToggleable();
-
-                        if (!$isToggleable) {
-                            continue;
-                        }
                     @endphp
                     <div x-sortable-item="{{ $column->getName() }}" :class="['flex gap-x-3 items-center']"
                         wire:key="{{ $column->getName() }}">
