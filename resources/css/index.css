@@ -40,3 +40,16 @@
 .column-resize-handle-bar.active::before {
     width: 4px !important;
 }
+
+.fi-ta-text div {
+    width: 100%;
+    min-width: 0;
+}
+
+.fi-ta-text-item-label,
+.fi-ta-header-cell-label,
+.fi-ta-text p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
