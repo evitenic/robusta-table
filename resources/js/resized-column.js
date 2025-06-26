@@ -35,8 +35,7 @@ export default function (Alpine) {
         function initializeColumnLayout() {
             let totalWidth = 0;
 
-            const applyLayout = (column, getNameFn, withHandleBar = false) => {
-                const columnName = getNameFn(column);
+            const applyLayout = (column, columnName, withHandleBar = false) => {
                 const defaultKey = `${columnName}_default`;
 
                 if (withHandleBar) {
@@ -61,11 +60,11 @@ export default function (Alpine) {
             };
 
             excludeColumns.forEach(column => {
-                applyLayout(column, col => getColumnName(col, excludeColumnSelector));
+                applyLayout(column, getColumnName(column, excludeColumnSelector));
             });
 
             columns.forEach(column => {
-                applyLayout(column, getColumnName, true);
+                applyLayout(column, getColumnName(column, columnSelector), true);
             });
 
             if (table && totalWidth) {
