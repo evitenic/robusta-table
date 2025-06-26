@@ -99,7 +99,7 @@ trait HasResizeableColumns
     public function getExcludedResizeableColumns(): array
     {
         return collect($this->evaluate($this->excludedResizeableColumns))
-            ->mapWithKeys(fn($column) => [$column => $this->getColumn($column)])
+            ->mapWithKeys(fn ($column) => [$column => $this->getColumn($column)])
             ->all();
     }
 }

@@ -10,6 +10,6 @@ use Filament\Tables\Table;
 class RobustaTable extends Table
 {
     use HasReorderColumns;
-    use HasToggleColumn;
     use HasResizeableColumns;
+    use HasToggleColumn;
 }

@@ -86,7 +86,7 @@ trait HasRobustaTable
 
         FilamentView::registerRenderHook(
             $filamentHook,
-            fn(): View => view('robusta-table::robusta-column.dropdown', [
+            fn (): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
                 'columns' => $this->getTable()->getColumns(),
                 'excludedReorderableColumns' => $this->getTable()->getExcludedReorderableColumns(),
@@ -111,7 +111,7 @@ trait HasRobustaTable
         $allColumns = $this->getTable()->getColumns();
 
         return collect($orderedNames)
-            ->mapWithKeys(fn($name) => [$name => $allColumns[$name]])
+            ->mapWithKeys(fn ($name) => [$name => $allColumns[$name]])
             ->all();
     }
 
@@ -178,7 +178,6 @@ trait HasRobustaTable
     /**
      * Resized Columns
      */
-
     public function getResizeableColumnsConfig(): array
     {
         return $this->getTable()->getResizeableColumnsConfig();

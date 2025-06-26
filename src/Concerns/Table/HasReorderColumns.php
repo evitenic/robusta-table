@@ -42,10 +42,11 @@ trait HasReorderColumns
 
         return $this;
     }
+
     public function getExcludedReorderableColumns(): array
     {
         return collect($this->evaluate($this->excludedReorderableColumns))
-            ->mapWithKeys(fn($column) => [$column => $this->getColumn($column)])
+            ->mapWithKeys(fn ($column) => [$column => $this->getColumn($column)])
             ->all();
     }
 }
