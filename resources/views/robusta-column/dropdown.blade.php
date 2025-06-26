@@ -55,27 +55,29 @@
                 </div>
             @endforeach
         </div>
-        <div class="grid gap-y-4 mt-4 border-t pt-4" style="border-style: dashed;">
-            @foreach ($excludedReorderableColumns as $key => $column)
-                @php
-                    $isColumnVisible = $this->getToggleColumnState($column->getName());
-                    $isToggleable = $column->isToggleable();
+        @if (!empty($excludedReorderableColumns))
+            <div class="grid gap-y-4 mt-4 border-t pt-4" style="border-style: dashed;">
+                @foreach ($excludedReorderableColumns as $key => $column)
+                    @php
+                        $isColumnVisible = $this->getToggleColumnState($column->getName());
+                        $isToggleable = $column->isToggleable();
 
-                    if (!$isToggleable) {
-                        continue;
-                    }
-                @endphp
-                <div x-sortable-item="{{ $column->getName() }}" :class="['flex gap-x-3 items-center']"
-                    wire:key="{{ $column->getName() }}">
-                    <x-filament::icon-button x-bind:disabled="isLoading" color="primary"
-                        icon="{{ $isColumnVisible ? config('robusta-table.icons.column-visible') : config('robusta-table.icons.column-hidden') }}"
-                        wire:click="toggleColumnVisibility('{{ $column->getName() }}')" />
+                        if (!$isToggleable) {
+                            continue;
+                        }
+                    @endphp
+                    <div x-sortable-item="{{ $column->getName() }}" :class="['flex gap-x-3 items-center']"
+                        wire:key="{{ $column->getName() }}">
+                        <x-filament::icon-button x-bind:disabled="isLoading" color="primary"
+                            icon="{{ $isColumnVisible ? config('robusta-table.icons.column-visible') : config('robusta-table.icons.column-hidden') }}"
+                            wire:click="toggleColumnVisibility('{{ $column->getName() }}')" />
 
-                    <span
-                        class="text-sm font-medium leading-6 text-gray-950 dark:text-white flex-1">{{ $column->getLabel() }}</span>
-                </div>
-            @endforeach
-        </div>
+                        <span
+                            class="text-sm font-medium leading-6 text-gray-950 dark:text-white flex-1">{{ $column->getLabel() }}</span>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
 </x-filament::dropdown>
