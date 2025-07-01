@@ -1,4 +1,4 @@
-// let initialized = false;
+let initialized = false;
 
 export default function (Alpine) {
     Alpine.directive('robusta-resized-column', (el, { expression }, { evaluate, cleanup }) => {
@@ -23,33 +23,33 @@ export default function (Alpine) {
         let tableWrapper = el.querySelector(tableWrapperContentSelector);
 
         if (table && tableWrapper) {
-            //  if (initialized) {
-            //     return;
-            // }
+             if (initialized) {
+                return;
+            }
 
-            // initialized = true;
+            initialized = true;
 
-            // const observer = new MutationObserver(() => {
-            //     observer.disconnect();  // stop observing temporarily
-            //     init();
-            //     observer.observe(el, { childList: true, subtree: true }); // resume observing
-            // });
+            const observer = new MutationObserver(() => {
+                observer.disconnect();  // stop observing temporarily
+                init();
+                observer.observe(el, { childList: true, subtree: true }); // resume observing
+            });
 
-            //  observer.observe(el, { childList: true, subtree: true });
+             observer.observe(el, { childList: true, subtree: true });
 
-            //   cleanup(() => {
-            //     observer.disconnect();
-            //     initialized = false; // ✅ allow re-init when re-mounted
-            // });
+              cleanup(() => {
+                observer.disconnect();
+                initialized = false; // ✅ allow re-init when re-mounted
+            });
 
              init();
         }
 
         function init() {
-            // table = el.querySelector(tableSelector);
-            // tableWrapper = el.querySelector(tableWrapperContentSelector);
-            // columns = el.querySelectorAll(`[${columnSelector}]`);
-            // excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
+            table = el.querySelector(tableSelector);
+            tableWrapper = el.querySelector(tableWrapperContentSelector);
+            columns = el.querySelectorAll(`[${columnSelector}]`);
+            excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
 
             initializeColumnLayout()
         }
