@@ -20,6 +20,10 @@ export default function (el, props) {
     let tableWrapper = el.querySelector(tableWrapperContentSelector);
 
     Livewire.hook("commit", () => {
+        observeChanges()
+    })
+
+    function observeChanges() {
         const observer = new MutationObserver(() => {
             const table = el.querySelector(tableSelector);
             const wrapper = el.querySelector(tableWrapperContentSelector);
@@ -31,7 +35,7 @@ export default function (el, props) {
         });
 
         observer.observe(el, { childList: true, subtree: true });
-    })
+    }
 
     function init() {
         table = el.querySelector(tableSelector);
