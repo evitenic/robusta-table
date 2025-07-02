@@ -101,9 +101,9 @@ class RobustaTableServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            // AlpineComponent::make('robusta-table', __DIR__ . '/../resources/dist/components/robusta-table.js'),
+            AlpineComponent::make('robusta-table', __DIR__ . '/../resources/dist/robusta-table.js'),
             Css::make('robusta-table-styles', __DIR__ . '/../resources/dist/robusta-table.css'),
-            Js::make('robusta-table-scripts', __DIR__ . '/../resources/dist/robusta-table.js'),
+            // Js::make('robusta-table-scripts', __DIR__ . '/../resources/dist/robusta-table.js'),
         ];
     }
 
