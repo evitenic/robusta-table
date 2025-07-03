@@ -21,10 +21,9 @@
         <div x-robusta-sortable="{ isLoading: isLoading, data: @js($columnsKeys), fixed: @js($excludedReorderableColumnsKeys) }"
             x-on:sorted="
                 isLoading = true;
-                console.log('Column order changed:', $event.detail);
                 $wire.call('updateColumnOrder', $event.detail).finally(() => isLoading = false)
             "
-            class="grid gap-y-4 mt-4">
+            class="grid gap-y-4 mt-4 pt-4">
             @foreach ($reorderableColumns as $key => $column)
                 @php
                     $isColumnVisible = $this->getToggleColumnState($column->getName());
