@@ -1,5 +1,6 @@
 
 export default function (el, props) {
+    let isInitialized = false
     let { tableKey, minColumnWidth, maxColumnWidth, enable = false } = props
 
     maxColumnWidth = maxColumnWidth === -1 ? Infinity : maxColumnWidth
@@ -19,31 +20,24 @@ export default function (el, props) {
     let table = el.querySelector(tableSelector);
     let tableWrapper = el.querySelector(tableWrapperContentSelector);
 
-    Livewire.hook("commit", () => {
-        observeChanges()
+    init();
+    Livewire.hook("element.init", () => {
+        if (isInitialized) return;
+        init();
     })
 
-    function observeChanges() {
-        const observer = new MutationObserver(() => {
-            const table = el.querySelector(tableSelector);
-            const wrapper = el.querySelector(tableWrapperContentSelector);
+    Livewire.hook("morph.updated", () => {
+        isInitialized = false;
+    })
 
-            if (table && wrapper) {
-                observer.disconnect();
-                init();
-            }
-        });
-
-        observer.observe(el, { childList: true, subtree: true });
-    }
 
     function init() {
         table = el.querySelector(tableSelector);
         tableWrapper = el.querySelector(tableWrapperContentSelector);
         columns = el.querySelectorAll(`[${columnSelector}]`);
         excludeColumns = el.querySelectorAll(`[${excludeColumnSelector}]`);
-
         initializeColumnLayout()
+        isInitialized = true;
     }
 
     function initializeColumnLayout() {
@@ -89,7 +83,7 @@ export default function (el, props) {
 
     function createHandleBar(column) {
         const existingHandle = column.querySelector(".column-resize-handle-bar");
-        if (existingHandle) existingHandle.remove();
+        if (existingHandle) return;
 
         const handleBar = document.createElement("button");
         handleBar.type = "button";
