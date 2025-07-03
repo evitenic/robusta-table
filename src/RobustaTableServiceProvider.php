@@ -11,6 +11,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Blade;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -76,6 +77,9 @@ class RobustaTableServiceProvider extends PackageServiceProvider
 
         // Icon Registration
         FilamentIcon::register($this->getIcons());
+
+        // Component Registration
+        $this->registerComponents();
 
         // Handle Stubs
         if (app()->runningInConsole()) {
@@ -149,5 +153,11 @@ class RobustaTableServiceProvider extends PackageServiceProvider
         return [
             'create_robusta-table_table',
         ];
+    }
+
+    protected function registerComponents(): void
+    {
+        // Register Blade components
+        Blade::component('robusta-table::wrapper', 'robusta-table.wrapper');
     }
 }
