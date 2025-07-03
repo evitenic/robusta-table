@@ -1,7 +1,7 @@
 import resizedColumn from './resized-column'
 import sortable from './sortable'
 
-export default function initTable({ resizedColumn: resizedColumnProps }) {
+export default function initRobustaTable({ resizedColumn: resizedColumnProps }) {
     return {
         init() {
             this.registerDirective()
