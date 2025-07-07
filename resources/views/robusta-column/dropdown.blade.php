@@ -38,7 +38,7 @@
                 <div x-sortable-item="{{ $column->getName() }}"
                     :class="['flex gap-x-3 items-center', isLoading ? 'opacity-50' : '']"
                     wire:key="{{ $column->getName() }}">
-                    @if ($column->isToggleable())
+                    @if ($isToggleable)
                         <x-filament::icon-button x-bind:disabled="isLoading" color="primary"
                             icon="{{ $isColumnVisible ? config('robusta-table.icons.column-visible') : config('robusta-table.icons.column-hidden') }}"
                             wire:click="toggleColumnVisibility('{{ $column->getName() }}')" />
