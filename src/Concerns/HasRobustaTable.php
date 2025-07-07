@@ -86,7 +86,7 @@ trait HasRobustaTable
 
         FilamentView::registerRenderHook(
             $filamentHook,
-            fn (): View => view('robusta-table::robusta-column.dropdown', [
+            fn(): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
                 'columns' => $this->getTable()->getColumns(),
                 'excludedReorderableColumns' => $this->getTable()->getExcludedReorderableColumns(),
@@ -109,9 +109,13 @@ trait HasRobustaTable
     public function getOrderedColumns(array $orderedNames): array
     {
         $allColumns = $this->getTable()->getColumns();
-
         return collect($orderedNames)
-            ->mapWithKeys(fn ($name) => [$name => $allColumns[$name]])
+            ->mapWithKeys(function ($name) use ($allColumns) {
+                if (! isset($allColumns[$name])) {
+                    return [];
+                }
+                return [$name => $allColumns[$name]];
+            })
             ->all();
     }
 
@@ -132,7 +136,7 @@ trait HasRobustaTable
         if ($this->getTable()->isPersistingToggledColumns()) {
             $store = RobustaTableStore::getInstance()->db();
             $store->set(
-                KeysStore::ToggleColumns->value,
+                $this->toggleColumnKeyStore(),
                 $this->getTable()->getLivewire()->toggledTableColumns
             );
         }
@@ -142,8 +146,9 @@ trait HasRobustaTable
     {
         if ($this->getTable()->isPersistingReorderedColumns()) {
             $store = RobustaTableStore::getInstance()->db();
+            $key = KeysStore::OrderedColumns->value . '_';
             $store->set(
-                KeysStore::OrderedColumns->value,
+                $this->orderColumnKeyStore(),
                 $this->orderedColumns
             );
         }
@@ -152,11 +157,11 @@ trait HasRobustaTable
     public function initSessionToggledColumns(Store $store): void
     {
         if ($this->getTable()->isPersistingToggledColumns()) {
-            $toggledColumns = $store->get(KeysStore::ToggleColumns->value, []);
+            $toggledColumns = $store->get($this->toggleColumnKeyStore(), []);
             $this->getTable()->getLivewire()->toggledTableColumns = $toggledColumns;
         } else {
             if (empty($this->tmpToggledColumns)) {
-                $store->forget(KeysStore::ToggleColumns->value);
+                $store->forget($this->toggleColumnKeyStore());
                 $this->getTable()->getLivewire()->toggledTableColumns = $this->getDefaultTableColumnToggleState();
             }
         }
@@ -164,15 +169,49 @@ trait HasRobustaTable
 
     public function initSessionOrderedColumns(Store $store): void
     {
+        $allColumns = array_keys($this->getTable()->getColumns());
+
         if ($this->getTable()->isPersistingToggledColumns()) {
-            $orderedColumns = $store->get(KeysStore::OrderedColumns->value, []);
+            $orderedColumns = $store->get($this->orderColumnKeyStore(), []);
+
+            // Jika belum pernah disimpan, langsung gunakan default
+            if (empty($orderedColumns)) {
+                $orderedColumns = $allColumns;
+            }
+
+            $newColumns = array_diff($allColumns, $orderedColumns);
+
+            if (!empty($newColumns)) {
+                foreach ($newColumns as $column) {
+                    $indexInDefault = array_search($column, $allColumns);
+
+                    // Sisipkan ke orderedColumns di posisi $indexInDefault
+                    array_splice($orderedColumns, $indexInDefault, 0, $column);
+                }
+
+                // Simpan kembali hasil baru
+                $store->set($this->orderColumnKeyStore(), $orderedColumns);
+            }
+
             $this->orderedColumns = $orderedColumns;
         } else {
             if (empty($this->orderedColumns)) {
-                $store->forget(KeysStore::OrderedColumns->value);
-                $this->orderedColumns = array_keys($this->getTable()->getColumns());
+                $store->forget($this->orderColumnKeyStore());
+                $this->orderedColumns = $allColumns;
             }
         }
+    }
+
+    protected function toggleColumnKeyStore(): string
+    {
+        $key = KeysStore::ToggleColumns->value . '_' . $this->getName();
+        return $key;
+    }
+
+    protected function orderColumnKeyStore(): string
+    {
+        $key = KeysStore::OrderedColumns->value . '_' . $this->getName();
+        return $key;
     }
 
     /**
