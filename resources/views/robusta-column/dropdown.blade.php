@@ -1,6 +1,5 @@
 @props(['columns', 'excludedReorderableColumns', 'maxHeight' => null, 'triggerAction', 'width' => 'xs'])
 @php
-    $canReorderColumns = $this->getTable()->isReorderableColumns();
     $reorderableColumns = array_filter(
         $columns,
         fn($column) => !array_key_exists($column->getName(), $excludedReorderableColumns),
