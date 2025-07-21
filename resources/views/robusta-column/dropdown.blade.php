@@ -28,6 +28,9 @@
                     $isColumnVisible = $this->getToggleColumnState($column->getName());
                     $isToggleable = $column->isToggleable();
                     $isNotSortable = in_array($column->getName(), $excludedReorderableColumnsKeys);
+                    if ($column->isHidden()) {
+                        continue;
+                    }
 
                     if (!$isToggleable && $isNotSortable) {
                         continue;
@@ -64,6 +67,9 @@
                 @foreach ($filteredExcludedReorderableColumns as $key => $column)
                     @php
                         $isColumnVisible = $this->getToggleColumnState($column->getName());
+                        if ($column->isHidden()) {
+                            continue;
+                        }
                     @endphp
                     <div x-sortable-item="{{ $column->getName() }}" :class="['flex gap-x-3 items-center']"
                         wire:key="{{ $column->getName() }}">
