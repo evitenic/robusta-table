@@ -6,13 +6,13 @@ use Closure;
 
 trait HasResizeableColumns
 {
-    protected array | Closure $resizeableColumnsConfig = [];
+    protected array|Closure $resizeableColumnsConfig = [];
 
-    protected array | Closure $excludedResizeableColumns = [];
+    protected array|Closure $excludedResizeableColumns = [];
 
     protected array $columnWidths = [];
 
-    public function resizeableColumns(array | Closure $config = []): static
+    public function resizeableColumns(array|Closure $config = []): static
     {
         $this->resizeableColumnsConfig = $config;
 
@@ -89,7 +89,7 @@ trait HasResizeableColumns
         return $width;
     }
 
-    public function excludedResizeableColumns(array | Closure $excludedColumns = []): static
+    public function excludedResizeableColumns(array|Closure $excludedColumns = []): static
     {
         $this->excludedResizeableColumns = $excludedColumns;
 

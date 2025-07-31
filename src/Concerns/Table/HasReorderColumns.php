@@ -6,13 +6,13 @@ use Closure;
 
 trait HasReorderColumns
 {
-    protected bool | Closure $isReorderableColumns = false;
+    protected bool|Closure $isReorderableColumns = false;
 
-    protected bool | Closure $persistsReorderedColumns = false;
+    protected bool|Closure $persistsReorderedColumns = false;
 
-    protected array | Closure $excludedReorderableColumns = [];
+    protected array|Closure $excludedReorderableColumns = [];
 
-    public function reorderableColumns(bool | Closure $isReorderableColumns = true): static
+    public function reorderableColumns(bool|Closure $isReorderableColumns = true): static
     {
         $this->isReorderableColumns = $isReorderableColumns;
 
@@ -36,7 +36,7 @@ trait HasReorderColumns
         return $this->evaluate($this->persistsReorderedColumns);
     }
 
-    public function excludedReorderableColumns(array | Closure $excludedReorderableColumns = []): static
+    public function excludedReorderableColumns(array|Closure $excludedReorderableColumns = []): static
     {
         $this->excludedReorderableColumns = $excludedReorderableColumns;
 

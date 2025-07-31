@@ -86,7 +86,7 @@ trait HasRobustaTable
 
         FilamentView::registerRenderHook(
             $filamentHook,
-            fn(): View => view('robusta-table::robusta-column.dropdown', [
+            fn (): View => view('robusta-table::robusta-column.dropdown', [
                 'triggerAction' => $action,
                 'columns' => $this->getTable()->getColumns(),
                 'excludedReorderableColumns' => $this->getTable()->getExcludedReorderableColumns(),
@@ -109,11 +109,13 @@ trait HasRobustaTable
     public function getOrderedColumns(array $orderedNames): array
     {
         $allColumns = $this->getTable()->getColumns();
+
         return collect($orderedNames)
             ->mapWithKeys(function ($name) use ($allColumns) {
                 if (! isset($allColumns[$name])) {
                     return [];
                 }
+
                 return [$name => $allColumns[$name]];
             })
             ->all();
@@ -146,7 +148,7 @@ trait HasRobustaTable
     {
         if ($this->getTable()->isPersistingReorderedColumns()) {
             $store = RobustaTableStore::getInstance()->db();
-            $key = KeysStore::OrderedColumns->value . '_';
+            $key = KeysStore::OrderedColumns->value.'_';
             $store->set(
                 $this->orderColumnKeyStore(),
                 $this->orderedColumns
@@ -181,7 +183,7 @@ trait HasRobustaTable
 
             $newColumns = array_diff($allColumns, $orderedColumns);
 
-            if (!empty($newColumns)) {
+            if (! empty($newColumns)) {
                 foreach ($newColumns as $column) {
                     $indexInDefault = array_search($column, $allColumns);
 
@@ -204,13 +206,15 @@ trait HasRobustaTable
 
     protected function toggleColumnKeyStore(): string
     {
-        $key = KeysStore::ToggleColumns->value . '_' . $this->getName();
+        $key = KeysStore::ToggleColumns->value.'_'.$this->getName();
+
         return $key;
     }
 
     protected function orderColumnKeyStore(): string
     {
-        $key = KeysStore::OrderedColumns->value . '_' . $this->getName();
+        $key = KeysStore::OrderedColumns->value.'_'.$this->getName();
+
         return $key;
     }
 
