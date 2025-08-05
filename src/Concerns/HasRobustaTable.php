@@ -10,6 +10,7 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
+use Livewire\Livewire;
 
 trait HasRobustaTable
 {
@@ -33,6 +34,7 @@ trait HasRobustaTable
         $this->getTable()->applyColumnExtraAttributes();
 
         $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
+
         if (! empty($this->orderedColumns)) {
             $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
         }
@@ -75,22 +77,47 @@ trait HasRobustaTable
 
     protected function registerLayoutViewToogleActionHook(string $filamentHook)
     {
+        $componentClass = static::class;
 
         $action = Action::make('toggleColumns')
             ->label(__('robusta-table::robusta-table.manage_columns'))
             ->iconButton()
             ->icon(config('robusta-table.icons.manage-column'))
             ->color('gray')
-            ->livewireClickHandlerEnabled(false)
-            ->table($this->getTable());
+            ->livewireClickHandlerEnabled(false);
 
         FilamentView::registerRenderHook(
             $filamentHook,
-            fn (): View => view('robusta-table::robusta-column.dropdown', [
-                'triggerAction' => $action,
-                'columns' => $this->getTable()->getColumns(),
-                'excludedReorderableColumns' => $this->getTable()->getExcludedReorderableColumns(),
-            ]),
+            function () use ($action, $componentClass): ?View {
+
+                /**
+                 * @var \Livewire\Component $currentComponent Current Livewire page component instance.
+                 */
+                $currentComponent = Livewire::current();
+
+                // Check if component exists and is the right type
+                if (! $currentComponent || ! $currentComponent instanceof $componentClass) {
+                    return null;
+                }
+
+                // Additional check for the trait
+                if (! in_array(HasRobustaTable::class, class_uses_recursive($currentComponent))) {
+                    return null;
+                }
+
+                try {
+                    $tableAction = clone $action;
+                    $tableAction->table($currentComponent->getTable());
+
+                    return view('robusta-table::robusta-column.dropdown', [
+                        'triggerAction' => $tableAction,
+                        'columns' => $currentComponent->getTable()->getColumns(),
+                        'excludedReorderableColumns' => $currentComponent->getTable()->getExcludedReorderableColumns(),
+                    ]);
+                } catch (\Throwable $e) {
+                    return null;
+                }
+            }
         );
     }
 
