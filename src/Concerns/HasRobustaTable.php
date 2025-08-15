@@ -2,12 +2,14 @@
 
 namespace Evitenic\RobustaTable\Concerns;
 
+use Filament\Actions\Action;
+use Throwable;
+use Livewire\Livewire\Component;
 use Evitenic\RobustaTable\Contracts\Store;
 use Evitenic\RobustaTable\Enums\KeysStore;
 use Evitenic\RobustaTable\Store\RobustaTableStore;
 use Evitenic\RobustaTable\Tables\RobustaTable;
 use Filament\Support\Facades\FilamentView;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Livewire\Livewire;
@@ -91,7 +93,7 @@ trait HasRobustaTable
             function () use ($action, $componentClass): ?View {
 
                 /**
-                 * @var \Livewire\Component $currentComponent Current Livewire page component instance.
+                 * @var Component $currentComponent Current Livewire page component instance.
                  */
                 $currentComponent = Livewire::current();
 
@@ -114,7 +116,7 @@ trait HasRobustaTable
                         'columns' => $currentComponent->getTable()->getColumns(),
                         'excludedReorderableColumns' => $currentComponent->getTable()->getExcludedReorderableColumns(),
                     ]);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     return null;
                 }
             }

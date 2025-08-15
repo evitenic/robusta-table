@@ -2,6 +2,7 @@
 
 namespace Evitenic\RobustaTable\Store;
 
+use RuntimeException;
 use Evitenic\RobustaTable\Contracts\Store;
 
 class RobustaTableStore
@@ -15,7 +16,7 @@ class RobustaTableStore
         $configStore = config('robusta-table.store_driver');
 
         if (is_null($configStore)) {
-            throw new \RuntimeException('Store configuration is not set.');
+            throw new RuntimeException('Store configuration is not set.');
         }
 
         if ($configStore === 'session') {
@@ -23,7 +24,7 @@ class RobustaTableStore
         } elseif (class_exists($configStore)) {
             $this->store = app($configStore); // Bisa inject via container
         } else {
-            throw new \RuntimeException("Store class {$configStore} does not exist.");
+            throw new RuntimeException("Store class {$configStore} does not exist.");
         }
     }
 
