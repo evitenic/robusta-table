@@ -21,7 +21,7 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             Livewire.hook("element.init", () => {
                 if(this.initialized) return;
 
-                 this.checkAndInitialize();
+                this.checkAndInitialize();
             })
 
             Livewire.hook("morph.updated", () => {
@@ -174,7 +174,7 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
         applyColumnSize(width, element, columnName){
             const name = this.sanitizeColumnName(columnName);
-            this.table.querySelectorAll(this.tableCellSelector + name)
+            this.table.querySelectorAll(this.tableCellSelector + this.escapeCssClass(columnName))
                 .forEach((cell) => {
                     this.setColumnStyles(cell, width);
                     cell.style.overflow = "hidden";
@@ -221,6 +221,14 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
         sanitizeColumnName(name) {
             return name.replaceAll('_', '-');
+        },
+
+        escapeCssClass(className) {
+            return className
+                .split('.')
+                .map(s => s.replace(/_/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
+                .join('\\.');
         }
+
     }
 }
