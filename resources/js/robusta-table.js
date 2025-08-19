@@ -67,7 +67,7 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             };
 
             this.columns.forEach((column) => {
-                const columnName = this.sanitizeColumnName(column.name);
+                const columnName = this.sanitizeName(column.name);
                 const columnEl = this.table.querySelector(this.tableHeaderSelector + columnName)
 
                 this.applyColumnStyle(columnEl, column.name, column.isResized);
@@ -173,8 +173,8 @@ export default function filamentRobustaTable({columns, resizedConfig}){
         },
 
         applyColumnSize(width, element, columnName){
-            const name = this.sanitizeColumnName(columnName);
-            this.table.querySelectorAll(this.tableCellSelector + this.escapeCssClass(columnName))
+            const name = this.sanitizeName(columnName);
+            this.table.querySelectorAll(this.tableCellSelector + name)
                 .forEach((cell) => {
                     this.setColumnStyles(cell, width);
                     cell.style.overflow = "hidden";
@@ -219,12 +219,8 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             };
         },
 
-        sanitizeColumnName(name) {
-            return name.replaceAll('_', '-');
-        },
-
-        escapeCssClass(className) {
-            return className
+        sanitizeName(name) {
+            return name
                 .split('.')
                 .map(s => s.replace(/_/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
                 .join('\\.');
