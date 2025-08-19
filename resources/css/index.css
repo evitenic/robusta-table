@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 /* Resized Column Styles */
 .column-resize-handle-bar {
     position: absolute;
@@ -33,7 +35,7 @@
 .column-resize-handle-bar:hover::before,
 .column-resize-handle-bar.active::before {
     width: 2px;
-    background-color: rgb(var(--primary-500));
+    background-color: rgb(59, 130, 246);
 }
 
 /* Active resize handle */
@@ -46,10 +48,9 @@
     min-width: 0;
 }
 
-.fi-ta-text-item-label,
-.fi-ta-header-cell-label,
 .fi-ta-text p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: inline-block;
 }

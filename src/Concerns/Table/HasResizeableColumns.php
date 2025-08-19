@@ -46,23 +46,23 @@ trait HasResizeableColumns
         $columns = $this->getColumns();
 
         foreach ($columns as $column) {
-            $excludedColumns = $this->getExcludedResizeableColumns();
+            // $excludedColumns = $this->getExcludedResizeableColumns();
             $width = $this->columnWidths[$column->getName()]['width'] ?? null;
             $styles = $this->getColumnStyles($width);
 
-            $columnName = $column->getName();
+            // $columnName = $column->getName();
 
-            if (isset($excludedColumns[$column->getName()])) {
-                $column->extraHeaderAttributes([
-                    'x-robusta-table-exclude-column' => $columnName,
-                ]);
-            } else {
-                $column->extraHeaderAttributes([
-                    'x-robusta-table-column' => $columnName,
-                    ...$styles['header'],
-                ])
-                    ->extraCellAttributes($styles['cell']);
-            }
+            // if (isset($excludedColumns[$column->getName()])) {
+            //     $column->extraHeaderAttributes([
+            //         'x-robusta-table-exclude-column' => $columnName,
+            //     ]);
+            // } else {
+            $column->extraHeaderAttributes([
+                // 'x-robusta-table-column' => $columnName,
+                ...$styles['header'],
+            ])
+                ->extraCellAttributes($styles['cell']);
+            // }
         }
     }
 
@@ -76,7 +76,7 @@ trait HasResizeableColumns
 
         return [
             'header' => ['style' => $style],
-            'cell' => ['style' => "{$style}; overflow: hidden"],
+            'cell' => ['style' => "{$style}; overflow: hidden;"],
         ];
     }
 

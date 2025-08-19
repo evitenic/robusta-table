@@ -49,4 +49,9 @@ trait HasReorderColumns
             ->mapWithKeys(fn ($column) => [$column => $this->getColumn($column)])
             ->all();
     }
+
+    public function hasReorderableColumns(): bool
+    {
+        return false;
+    }
 }

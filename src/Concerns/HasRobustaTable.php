@@ -2,20 +2,27 @@
 
 namespace Evitenic\RobustaTable\Concerns;
 
-use Filament\Actions\Action;
-use Throwable;
-use Livewire\Livewire\Component;
 use Evitenic\RobustaTable\Contracts\Store;
 use Evitenic\RobustaTable\Enums\KeysStore;
 use Evitenic\RobustaTable\Store\RobustaTableStore;
+use Evitenic\RobustaTable\Tables\Components\EmbeddedTable;
 use Evitenic\RobustaTable\Tables\RobustaTable;
+use Filament\Actions\Action;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
+use Filament\Tables\Columns\Column;
 use Filament\Tables\Table;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\View\View;
 use Livewire\Livewire;
+use Livewire\Livewire\Component;
+use Throwable;
 
 trait HasRobustaTable
 {
+    public const TABLE_COLUMN_MANAGER_COLUMN_TYPE = 'column';
+
     public array $orderedColumns = [];
 
     public array $tmpToggledColumns = [];
@@ -29,17 +36,17 @@ trait HasRobustaTable
 
     public function bootedHasRobustaTable()
     {
-        $store = RobustaTableStore::getInstance()->db();
-        $this->initSessionToggledColumns($store);
-        $this->initSessionOrderedColumns($store);
+        // $store = RobustaTableStore::getInstance()->db();
+        // $this->initSessionToggledColumns($store);
+        // $this->initSessionOrderedColumns($store);
 
         $this->getTable()->applyColumnExtraAttributes();
 
-        $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
+        // $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
 
-        if (! empty($this->orderedColumns)) {
-            $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
-        }
+        // if (! empty($this->orderedColumns)) {
+        //     $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
+        // }
     }
 
     public function mountHasRobustaTable()
@@ -77,6 +84,9 @@ trait HasRobustaTable
         //
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     protected function registerLayoutViewToogleActionHook(string $filamentHook)
     {
         $componentClass = static::class;
@@ -119,15 +129,21 @@ trait HasRobustaTable
                 } catch (Throwable $e) {
                     return null;
                 }
-            }
+            },
         );
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function getColumnToggleForm()
     {
         return $this->getTable()->getLivewire()->getTableColumnToggleForm();
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function updateColumnOrder(array $orderedColumns): void
     {
         $this->orderedColumns = $orderedColumns;
@@ -135,6 +151,9 @@ trait HasRobustaTable
         $this->storeOrderedColumnsState();
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function getOrderedColumns(array $orderedNames): array
     {
         $allColumns = $this->getTable()->getColumns();
@@ -150,6 +169,9 @@ trait HasRobustaTable
             ->all();
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function toggleColumnVisibility(string $columnName): void
     {
         data_set($this->getTable()->getLivewire()->toggledTableColumns, $columnName, $this->isTableColumnToggledHidden($columnName));
@@ -157,11 +179,17 @@ trait HasRobustaTable
         $this->storeToggleColumnState();
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function getToggleColumnState(string $columnName): bool
     {
         return ! $this->isTableColumnToggledHidden($columnName);
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function storeToggleColumnState(): void
     {
         if ($this->getTable()->isPersistingToggledColumns()) {
@@ -173,6 +201,9 @@ trait HasRobustaTable
         }
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function storeOrderedColumnsState(): void
     {
         if ($this->getTable()->isPersistingReorderedColumns()) {
@@ -185,6 +216,9 @@ trait HasRobustaTable
         }
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function initSessionToggledColumns(Store $store): void
     {
         if ($this->getTable()->isPersistingToggledColumns()) {
@@ -193,11 +227,15 @@ trait HasRobustaTable
         } else {
             if (empty($this->tmpToggledColumns)) {
                 $store->forget($this->toggleColumnKeyStore());
-                $this->getTable()->getLivewire()->toggledTableColumns = $this->getDefaultTableColumnToggleState();
+                $this->getTable()->getLivewire()->toggledTableColumns = $this->getDefaultTableColumnState();
+                // dd($this->getTable()->getLivewire()->toggledTableColumns);
             }
         }
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     public function initSessionOrderedColumns(Store $store): void
     {
         $allColumns = array_keys($this->getTable()->getColumns());
@@ -233,6 +271,9 @@ trait HasRobustaTable
         }
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     protected function toggleColumnKeyStore(): string
     {
         $key = KeysStore::ToggleColumns->value.'_'.$this->getName();
@@ -240,6 +281,9 @@ trait HasRobustaTable
         return $key;
     }
 
+    /**
+     * @deprecated since 2.x this method is deprecated and will be removed
+     */
     protected function orderColumnKeyStore(): string
     {
         $key = KeysStore::OrderedColumns->value.'_'.$this->getName();
@@ -253,5 +297,30 @@ trait HasRobustaTable
     public function getResizeableColumnsConfig(): array
     {
         return $this->getTable()->getResizeableColumnsConfig();
+    }
+
+    protected function mapTableColumnToArray(Column $column): array
+    {
+        return [
+            'type' => self::TABLE_COLUMN_MANAGER_COLUMN_TYPE,
+            'name' => $column->getName(),
+            'label' => (string) $column->getLabel(),
+            'isHidden' => $column->isHidden(),
+            'isToggled' => ! $column->isToggleable() || ! $column->isToggledHiddenByDefault(),
+            'isToggleable' => $column->isToggleable(),
+            'isToggledHiddenByDefault' => $column->isToggleable() ? $column->isToggledHiddenByDefault() : null,
+            'isResized' => ! in_array($column, $this->getTable()->getExcludedResizeableColumns()),
+        ];
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getTabsContentComponent(),
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE),
+                EmbeddedTable::make(),
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER),
+            ]);
     }
 }

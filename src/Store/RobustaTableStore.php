@@ -2,8 +2,8 @@
 
 namespace Evitenic\RobustaTable\Store;
 
-use RuntimeException;
 use Evitenic\RobustaTable\Contracts\Store;
+use RuntimeException;
 
 class RobustaTableStore
 {
