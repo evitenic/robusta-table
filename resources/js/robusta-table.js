@@ -26,6 +26,8 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
             Livewire.hook("morph.updated", () => {
                 this.initialized = false;
+
+                this.checkAndInitialize();
             })
 
             this.element = this.$el;
