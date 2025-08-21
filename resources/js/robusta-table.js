@@ -16,45 +16,49 @@ export default function filamentRobustaTable({columns, resizedConfig}){
         tableContent: null,
         tableKey: null,
         totalWidth: 0,
+        morphDebounceTimer: null,
+        pendingUpdate: false,
 
         init(){
-            Livewire.hook("element.init", () => {
-                if(this.initialized) return;
-
-                this.checkAndInitialize();
-            })
-
-            Livewire.hook("morph.updated", () => {
-                this.initialized = false;
-
-                this.checkAndInitialize();
-            })
-
             this.element = this.$el;
 
-            this.$nextTick(() => this.checkAndInitialize());
+            this.checkAndInitialize();
 
-            this.observeForTable();
+            Livewire.hook("morph.updated", ({el}) => {
+                if(!this.element || !this.element.contains(el)) return;
+
+                if (this.pendingUpdate) return;
+
+                this.pendingUpdate = true;
+
+                clearTimeout(this.morphDebounceTimer);
+
+                this.morphDebounceTimer = setTimeout(() => {
+                    // Only reinitialize if the table still exists
+                    if (this.element && document.contains(this.element)) {
+                        this.initialized = false;
+                        this.totalWidth = 0;
+                        this.checkAndInitialize();
+                    }
+                    this.pendingUpdate = false;
+                }, 0);
+            })
         },
 
-        observeForTable() {
-            const observer = new MutationObserver(() => {
-                if (!this.initialized) {
-                    this.checkAndInitialize();
-                }
+        checkAndInitialize() {
+            if (this.initialized) return;
 
-                if (this.initialized) {
-                    observer.disconnect();
-                }
-            });
-            observer.observe(this.element, {
-                childList: true,
-                subtree: true
-            });
+            if (!this.tableContent) this.tableContent = this.element.querySelector(this.tableContentSelector);
+            this.table = this.element.querySelector(this.tableSelector);
+
+            if(this.table){
+                this.initialized = true;
+                this.initializeResizedColumn();
+            }
         },
 
         initializeResizedColumn() {
-            const {tableKey, minColumnWidth, maxColumnWidth, enable = false} = this.resizedConfig;
+            const {tableKey, minColumnWidth = 50, maxColumnWidth = -1, enable = false} = this.resizedConfig;
 
             this.tableKey = tableKey;
             this.minColumnWidth = minColumnWidth;
@@ -64,18 +68,21 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
             if(!this.columns || this.columns.length === 0) {
                 this.columns = [];
-
                 return;
             };
+
+            this.totalWidth = 0; // Reset before calculating
 
             this.columns.forEach((column) => {
                 const columnName = this.sanitizeName(column.name);
                 const columnEl = this.table.querySelector(this.tableHeaderSelector + columnName)
 
-                this.applyColumnStyle(columnEl, column.name, column.isResized);
+                if(columnEl && column.isResized){
+                    this.applyColumnStyle(columnEl, column.name, column.isResized);
+                }
             });
 
-            if (this.table && this.totalWidth) {
+            if (this.table && this.totalWidth > 0) {
                 this.table.style.maxWidth = `${this.totalWidth}px`;
             }
         },
@@ -105,18 +112,6 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             this.totalWidth += savedWidth;
         },
 
-        checkAndInitialize() {
-            if (this.initialized) return;
-
-            if (!this.tableContent) this.tableContent = this.element.querySelector(this.tableContentSelector);
-            this.table = this.element.querySelector(this.tableSelector);
-
-            if(this.table){
-                this.initialized = true;
-                this.initializeResizedColumn();
-            }
-        },
-
         createHandleBar(columnEl, columnName){
             const existingHandleBar = columnEl.querySelector(`.${this.handleBarClassName}`);
             if(existingHandleBar) return;
@@ -129,6 +124,7 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             columnEl.appendChild(handleBarEl);
 
             handleBarEl.addEventListener("mousedown", (e) => this.startResize(e, columnEl, columnName));
+            handleBarEl.addEventListener('dblclick', (e) => this.handleDoubleClick(e, columnEl, columnName));
         },
 
         startResize(event, element, columnName){
@@ -147,6 +143,8 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
                 const delta = moveEvent.pageX - startX;
 
+                this.currentWidth = 0; // reset value
+
                 this.currentWidth = Math.round(
                     Math.min(this.maxColumnWidth,
                         Math.max(this.minColumnWidth, originalElementWidth + delta - 16)
@@ -159,12 +157,14 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
                 this.applyColumnSize(this.currentWidth, element, columnName);
 
-            }, 50)
+            }, 16)
 
             const onMouseUp = () => {
                 if (event) event.target.classList.remove("active");
 
-                this.updateColumnSize(this.currentWidth, columnName);
+                if (this.currentWidth > 0){
+                    this.updateColumnSize(this.currentWidth, columnName);
+                }
 
                 document.removeEventListener("mousemove", onMouseMove);
                 document.removeEventListener("mouseup", onMouseUp);
@@ -174,34 +174,60 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             document.addEventListener("mouseup", onMouseUp);
         },
 
+        handleDoubleClick(event, element, columnName){
+            event.preventDefault();
+            event.stopPropagation();
+
+            const defaultColumnKey = columnName + "_default";
+            const savedWidth = this.getSavedWidth(defaultColumnKey) || this.minColumnWidth;
+
+            if (savedWidth === element.offsetWidth)  return;
+
+            this.applyColumnSize(savedWidth, element, columnName)
+            this.updateColumnSize(savedWidth, columnName);
+        },
+
         applyColumnSize(width, element, columnName){
             const name = this.sanitizeName(columnName);
-            this.table.querySelectorAll(this.tableCellSelector + name)
-                .forEach((cell) => {
-                    this.setColumnStyles(cell, width);
-                    cell.style.overflow = "hidden";
-                });
+
+            this.setColumnStyles(element, width);
+            const cell = this.table.querySelectorAll(this.tableCellSelector + name);
+
+            cell.forEach((cell) => {
+                this.setColumnStyles(cell, width);
+                cell.style.overflow = "hidden";
+                cell.style.textOverflow = "ellipsis";
+                cell.style.whiteSpace = "nowrap";
+            });
         },
 
         setColumnStyles(element, width){
-            element.style.width = width ? `${width}px` : "auto";
-            element.style.minWidth = width ? `${width}px` : "auto";
-            element.style.maxWidth = width ? `${width}px` : "auto";
+            if (width && width > 0) {
+                element.style.width = `${width}px`;
+                element.style.minWidth = `${width}px`;
+                element.style.maxWidth = `${width}px`;
+            } else {
+                element.style.width = "auto";
+                element.style.minWidth = "auto";
+                element.style.maxWidth = "auto";
+            }
         },
 
         updateColumnSize(width, columnName){
-            sessionStorage.setItem(
-            this.getStorageKey(columnName),
-            Math.max(
-                this.minColumnWidth,
-                Math.min(this.maxColumnWidth, width)
-            ).toString()
-        );
+            if (width && width > 0) {
+                sessionStorage.setItem(
+                    this.getStorageKey(columnName),
+                    Math.max(
+                        this.minColumnWidth,
+                        Math.min(this.maxColumnWidth, width)
+                    ).toString()
+                );
+            }
         },
 
         getSavedWidth(name) {
             const savedWidth = sessionStorage.getItem(this.getStorageKey(name));
-            return savedWidth ? parseInt(savedWidth) : null;
+            return savedWidth ? parseInt(savedWidth, 10) : null;
         },
 
         getStorageKey(name) {
@@ -210,12 +236,20 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
         throttle(callback, limit) {
             let wait = false;
+            let lastArgs = null;
+
             return function (...args) {
+                lastArgs = args;
+
                 if (!wait){
-                    callback.apply(this, args);
+                    callback.apply(this, lastArgs);
                     wait = true;
+
                     setTimeout(() => {
                         wait = false;
+                        if(lastArgs){
+                            callback.apply(this.lastArgs);
+                        }
                     }, limit);
                 }
             };

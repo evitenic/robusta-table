@@ -43,12 +43,13 @@
     width: 4px !important;
 }
 
-.fi-ta-text div {
+.fi-ta-text-item {
     width: 100%;
     min-width: 0;
 }
 
-.fi-ta-text p {
+.fi-ta-text-item,
+.fi-ta-text-description {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
