@@ -7,7 +7,6 @@ use Evitenic\RobustaTable\Enums\KeysStore;
 use Evitenic\RobustaTable\Store\RobustaTableStore;
 use Evitenic\RobustaTable\Tables\Components\EmbeddedTable;
 use Evitenic\RobustaTable\Tables\RobustaTable;
-use Filament\Actions\Action;
 use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
@@ -41,8 +40,7 @@ trait HasRobustaTable
         // $this->initSessionOrderedColumns($store);
 
         $this->getTable()->applyColumnExtraAttributes();
-
-        // $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
+        $this->registerLayoutViewToogleActionHook(config('robusta-table.position_manage_columns'));
 
         // if (! empty($this->orderedColumns)) {
         //     $this->getTable()->columns($this->getOrderedColumns($this->orderedColumns));
@@ -84,23 +82,13 @@ trait HasRobustaTable
         //
     }
 
-    /**
-     * @deprecated since 2.x this method is deprecated and will be removed
-     */
     protected function registerLayoutViewToogleActionHook(string $filamentHook)
     {
         $componentClass = static::class;
 
-        $action = Action::make('toggleColumns')
-            ->label(__('robusta-table::robusta-table.manage_columns'))
-            ->iconButton()
-            ->icon(config('robusta-table.icons.manage-column'))
-            ->color('gray')
-            ->livewireClickHandlerEnabled(false);
-
         FilamentView::registerRenderHook(
             $filamentHook,
-            function () use ($action, $componentClass): ?View {
+            function () use ($componentClass): ?View {
 
                 /**
                  * @var Component $currentComponent Current Livewire page component instance.
@@ -118,18 +106,37 @@ trait HasRobustaTable
                 }
 
                 try {
-                    $tableAction = clone $action;
-                    $tableAction->table($currentComponent->getTable());
+                    $currentTable = $currentComponent->getTable();
+                    $additionalKeys = [];
 
-                    return view('robusta-table::robusta-column.dropdown', [
-                        'triggerAction' => $tableAction,
-                        'columns' => $currentComponent->getTable()->getColumns(),
-                        'excludedReorderableColumns' => $currentComponent->getTable()->getExcludedReorderableColumns(),
+                    $hasColumnManagerDropdown = $currentTable->hasColumnManager();
+                    $heading = $currentTable->getHeading();
+                    $secondLevelHeadingTag = $heading ? $currentTable->getHeadingTag(1) : $currentTable->getHeadingTag();
+
+                    if ($hasColumnManagerDropdown) {
+                        $additionalKeys['columnManagerMaxHeight'] = $currentTable->getColumnManagerMaxHeight();
+                        $additionalKeys['columnManagerWidth'] = $currentTable->getColumnManagerWidth();
+                        $additionalKeys['columnManagerColumns'] = $currentTable->getColumnManagerColumns();
+                    }
+
+                    return view('robusta-table::robusta-column.column-manager', [
+                        'columnManagerTriggerAction' => $currentTable->getRobustaTableColumnManagerTriggerAction(),
+                        'excludedReorderableColumns' => $currentTable->getExcludedReorderColumns(),
+                        'hasColumnManagerDropdown' => $hasColumnManagerDropdown,
+                        'columnManagerApplyAction' => $currentTable->getColumnManagerApplyAction(),
+                        'hasReorderableColumns' => $currentTable->hasReorderableColumns(),
+                        'hasToggleableColumns' => $currentTable->hasReorderableColumns(),
+                        'secondLevelHeadingTag' => $secondLevelHeadingTag,
+                        'reorderAnimationDuration' => $currentTable->getReorderAnimationDuration(),
+                        ...$additionalKeys,
                     ]);
                 } catch (Throwable $e) {
+                    dd($e);
+
                     return null;
                 }
             },
+            $componentClass
         );
     }
 
@@ -309,7 +316,8 @@ trait HasRobustaTable
             'isToggled' => ! $column->isToggleable() || ! $column->isToggledHiddenByDefault(),
             'isToggleable' => $column->isToggleable(),
             'isToggledHiddenByDefault' => $column->isToggleable() ? $column->isToggledHiddenByDefault() : null,
-            'isResized' => ! in_array($column, $this->getTable()->getExcludedResizeableColumns()),
+            'isResized' => ! in_array($column->getName(), $this->getTable()->getExcludedResizeableColumns()),
+            'isReorderable' => ! in_array($column->getName(), $this->getTable()->getExcludedReorderColumns()),
         ];
     }
 

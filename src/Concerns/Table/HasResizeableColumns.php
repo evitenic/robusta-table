@@ -46,23 +46,13 @@ trait HasResizeableColumns
         $columns = $this->getColumns();
 
         foreach ($columns as $column) {
-            // $excludedColumns = $this->getExcludedResizeableColumns();
             $width = $this->columnWidths[$column->getName()]['width'] ?? null;
             $styles = $this->getColumnStyles($width);
 
-            // $columnName = $column->getName();
-
-            // if (isset($excludedColumns[$column->getName()])) {
-            //     $column->extraHeaderAttributes([
-            //         'x-robusta-table-exclude-column' => $columnName,
-            //     ]);
-            // } else {
             $column->extraHeaderAttributes([
-                // 'x-robusta-table-column' => $columnName,
                 ...$styles['header'],
             ])
                 ->extraCellAttributes($styles['cell']);
-            // }
         }
     }
 
@@ -98,8 +88,6 @@ trait HasResizeableColumns
 
     public function getExcludedResizeableColumns(): array
     {
-        return collect($this->evaluate($this->excludedResizeableColumns))
-            ->mapWithKeys(fn ($column) => [$column => $this->getColumn($column)])
-            ->all();
+        return $this->evaluate($this->excludedResizeableColumns);
     }
 }
