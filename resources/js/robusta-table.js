@@ -16,8 +16,9 @@ export default function filamentRobustaTable({columns, resizedConfig}){
         tableContent: null,
         tableKey: null,
         totalWidth: 0,
-        morphDebounceTimer: null,
         pendingUpdate: false,
+        isloading : false,
+        error: undefined,
 
         init(){
             this.element = this.$el;
@@ -31,17 +32,14 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
                 this.pendingUpdate = true;
 
-                clearTimeout(this.morphDebounceTimer);
-
-                this.morphDebounceTimer = setTimeout(() => {
-                    // Only reinitialize if the table still exists
+                requestAnimationFrame(() => {
                     if (this.element && document.contains(this.element)) {
                         this.initialized = false;
                         this.totalWidth = 0;
                         this.checkAndInitialize();
                     }
                     this.pendingUpdate = false;
-                }, 0);
+                })
             })
         },
 
@@ -103,8 +101,8 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             }
 
             if(!savedWidth && !defaultWidth){
-                savedWidth = columnEl.offsetWidth > (this.table.offsetWidth / 1.5) ? (columnEl.offsetWidth / 2) : columnEl.offsetWidth;
-                this.updateColumnSize(savedWidth, defaultKey);
+                savedWidth = this.getColumn(columnName).width ?? columnEl.offsetWidth > (this.table.offsetWidth / 1.5) ? (columnEl.offsetWidth / 2) : columnEl.offsetWidth;
+                this.updateColumnSize(savedWidth, columnName, defaultKey);
             }
 
             this.applyColumnSize(savedWidth, columnEl, columnName);
@@ -213,15 +211,19 @@ export default function filamentRobustaTable({columns, resizedConfig}){
             }
         },
 
-        updateColumnSize(width, columnName){
+        updateColumnSize(width, columnName, key){
+            if(!key) key = columnName;
+
             if (width && width > 0) {
                 sessionStorage.setItem(
-                    this.getStorageKey(columnName),
+                    this.getStorageKey(key),
                     Math.max(
                         this.minColumnWidth,
                         Math.min(this.maxColumnWidth, width)
                     ).toString()
                 );
+
+                this.getColumn(columnName).width = width;
             }
         },
 
@@ -248,11 +250,15 @@ export default function filamentRobustaTable({columns, resizedConfig}){
                     setTimeout(() => {
                         wait = false;
                         if(lastArgs){
-                            callback.apply(this.lastArgs);
+                            callback.apply(this, lastArgs);
                         }
                     }, limit);
                 }
             };
+        },
+
+        getColumn(name){
+            return this.columns.find((column) => column.name === name);
         },
 
         sanitizeName(name) {
@@ -260,7 +266,21 @@ export default function filamentRobustaTable({columns, resizedConfig}){
                 .split('.')
                 .map(s => s.replace(/_/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
                 .join('\\.');
-        }
+        },
 
+        async applyTableColumns() {
+            this.isLoading = true
+            try{
+                await this.$wire.call('applyTableColumnManager', this.columns);
+
+                this.error = undefined
+            } catch (error){
+                this.error = 'Failed to update column size'
+
+                console.error('Robusta table resize column error:', error)
+            } finally {
+                this.isLoading = false;
+            }
+        }
     }
 }
