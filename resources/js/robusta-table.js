@@ -151,7 +151,7 @@ export default function filamentRobustaTable({columns, resizedConfig}){
 
                 const newTableWidth = originalTableWidth - originalElementWidth + this.currentWidth;
 
-                this.table.style.width = newTableWidth > originalWrapperWidth ? `${newTableWidth}px` : "auto";
+                this.table.style.width = `${newTableWidth}px` ;
 
                 this.applyColumnSize(this.currentWidth, element, columnName);
 
