@@ -106,6 +106,7 @@ class RobustaTableServiceProvider extends PackageServiceProvider
     {
         return [
             AlpineComponent::make('robusta-table', __DIR__.'/../resources/dist/robusta-table.js'),
+            AlpineComponent::make('robusta-table-column-manager', __DIR__.'/../resources/dist/robusta-table-column-manager.js'),
             Css::make('robusta-table-styles', __DIR__.'/../resources/dist/robusta-table.css')->loadedOnRequest(),
             // Js::make('robusta-table-scripts', __DIR__ . '/../resources/dist/robusta-table.js'),
         ];

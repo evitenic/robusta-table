@@ -45,6 +45,6 @@ const defaultOptions = {
 
 compile({
     ...defaultOptions,
-    entryPoints: ['./resources/js/robusta-table.js'],
-    outfile: './resources/dist/robusta-table.js',
+    entryPoints: ['./resources/js/robusta-table.js', './resources/js/robusta-table-column-manager.js'],
+    outdir: './resources/dist',
 })
